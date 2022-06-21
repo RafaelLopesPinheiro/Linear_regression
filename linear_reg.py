@@ -23,7 +23,6 @@ def clean_data(data):
     return data
 
 
-
 def plot_linreg(benchmark, asset, data):
     sns.pairplot(data, y_vars=asset, x_vars=benchmark, 
                     height=2, aspect=2 , kind='reg')
@@ -33,7 +32,6 @@ def beta_value(data, benchmark):
     df = pd.DataFrame({'a':[1]})
     for i in data.keys():    
         slope, intercept, r, p, std = stats.linregress(data[benchmark].dropna(), data[i].dropna())
-        # print(i, slope)
         df.insert(1, i, slope)
     df.drop(labels='a', axis=1,inplace=True)
     df.index = ['beta']
@@ -41,36 +39,25 @@ def beta_value(data, benchmark):
     return df
     
 
-
-
 def main():
     tickers = ["^BVSP", "VALE", "PETR4.SA", "WEGE3.SA", "BBAS3.SA"]
     end_date = dt.datetime.now()
     start_date = end_date - dt.timedelta(days=700)
     interval = '1D'
-    # benchmark = 'Benchmark Mercado' ## data for independent variable in linear regression 
-    benchmark = "^BVSP"
+    benchmark = "^BVSP"  ## data for independent variable in linear regression 
 
     ### CREATE CSV FILE ### 
-    df = get_data(tickers, startDate=start_date, endDate=end_date, interval=interval)
-    df.to_csv('ativos_br.csv')
+    # df = get_data(tickers, startDate=start_date, endDate=end_date, interval=interval)
+    # df.to_csv('ativos_br.csv')
     df = pd.read_csv('ativos_br.csv', index_col='Date')
 
-
-
-    # df = pd.read_csv('C:/Users/rafae/Desktop/Prova Quant/precos.csv', sep=';', index_col='date')  
     df_clean = clean_data(df)
     df_clean = df_clean.pct_change()
-    # print(df_clean.VALE) ## WAY TO ACESS COLUMNS WITHOUT A LIST [] 
 
-
-
-    assets_name = [w for w in df_clean.keys() if w != benchmark]   ## LIST WITH ALL COLUMNS WITHOUT BENCHMARK
+    assets_name = [w for w in df_clean.keys() if w != benchmark]   ## LIST WITH ALL COLUMNS NAME WITHOUT BENCHMARK
     plot_linreg(benchmark, assets_name, df_clean)
-    betas = beta_value(df_clean, benchmark) ## BETA VALUE FOR HARD CODED STOCK 
-
+    betas = beta_value(df_clean, benchmark) 
     print(betas.iloc[:,:])
-
 
 
 main()
